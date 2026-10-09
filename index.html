@@ -1,1162 +1,112 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Ethan Vale — I See Through the Wild</title>
-  <meta name="description" content="Wildlife photography archive by Ethan Vale. Field notes from natural encounters, captured without intervention.">
-  <meta property="og:title" content="Ethan Vale — I See Through the Wild">
-  <meta property="og:description" content="Wildlife photography archive by Ethan Vale. Field notes from natural encounters, captured without intervention.">
+  <title>ETEC Gallery — Lauro Gomes | SBC Baeta Neves</title>
+  <meta name="description" content="Acervo visual e galeria interativa da ETEC Lauro Gomes, São Bernardo do Campo.">
+  <meta property="og:title" content="ETEC Gallery — Lauro Gomes">
+  <meta property="og:description" content="Acervo visual e galeria interativa da ETEC Lauro Gomes, São Bernardo do Campo.">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Fontes Tipográficas Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500&display=swap">
-  <style>
-    :root {
-      --bg: #000;
-      --ink: #f4f2ef;
-      --dim: #8c8783;
-      --line: rgba(244, 242, 239, .28);
-      --pad: clamp(14px, 2.6vw, 34px);
-      --ease: cubic-bezier(.22, .61, .36, 1);
-      --hw: min(56vw, 640px);
-      --persp: 1150px;
-      --safe-top: env(safe-area-inset-top, 0px);
-      --safe-right: env(safe-area-inset-right, 0px);
-      --safe-bottom: env(safe-area-inset-bottom, 0px);
-      --safe-left: env(safe-area-inset-left, 0px);
-      --tap: 44px;
-      --serif: "Playfair Display", "Times New Roman", serif;
-      --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    }
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500;600&display=swap">
 
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      background: #000;
-      scrollbar-gutter: stable;
-      font-family: var(--sans);
-      font-weight: 300;
-      color: var(--ink);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    body {
-      background: #000;
-      color: var(--ink);
-      overflow-x: hidden;
-      min-height: 100vh;
-      min-height: 100dvh;
-      overscroll-behavior-y: none;
-    }
-
-    body.locked {
-      overflow: hidden;
-      height: 100vh;
-      height: 100dvh;
-    }
-
-    img {
-      display: block;
-      max-width: 100%;
-    }
-
-    button {
-      font: inherit;
-      color: inherit;
-      background: none;
-      border: none;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-    }
-
-    a {
-      -webkit-tap-highlight-color: transparent;
-      color: inherit;
-    }
-
-    /* 1. Scroll Track */
-    #scrolltrack {
-      height: 116vh;
-      pointer-events: none;
-      visibility: hidden;
-    }
-
-    /* 2. 3D Stage & Center Alignment */
-    #stage {
-      position: fixed;
-      inset: 0;
-      z-index: 10;
-      perspective: var(--persp);
-      perspective-origin: 50% 50%;
-      overflow: hidden;
-      touch-action: none;
-    }
-
-    @media (pointer: coarse) {
-      #stage {
-        touch-action: pan-y;
-      }
-    }
-
-    #world {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      transform-style: preserve-3d;
-      will-change: transform;
-    }
-
-    #orb {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 0;
-      height: 0;
-      transform-style: preserve-3d;
-      opacity: 1;
-      transform: none;
-    }
-
-    #headline {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: var(--hw);
-      margin-left: calc(var(--hw) / -2);
-      text-align: center;
-      font-family: var(--serif);
-      font-weight: 400;
-      font-size: clamp(25px, 3.7vw, 55px);
-      line-height: 1.06;
-      letter-spacing: -.005em;
-      color: #fff;
-      text-shadow: 0 2px 34px rgba(0, 0, 0, .55);
-      pointer-events: none;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-
-    #headline .inner {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      transform: translateY(-50%);
-    }
-
-    #headline .inner span {
-      display: inline-block;
-      opacity: 0;
-      transform: translateY(.42em);
-      filter: blur(7px);
-    }
-
-    body.revealed #headline .inner span {
-      opacity: 1;
-      transform: none;
-      filter: blur(0);
-      transition: opacity 1.05s var(--ease), transform 1.15s var(--ease), filter 1.05s var(--ease);
-      transition-delay: calc(.9s + var(--i) * .085s);
-    }
-
-    /* Sphere Cards */
-    .card {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: var(--cw);
-      height: calc(var(--cw) / 1.5);
-      margin-left: calc(var(--cw) / -2);
-      margin-top: calc(var(--cw) / -3);
-      transform-style: preserve-3d;
-      will-change: transform, opacity;
-    }
-
-    .card.tall {
-      height: calc(var(--cw) * 1.25);
-      margin-top: calc(var(--cw) * -0.625);
-    }
-
-    .card figure {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      margin: 0;
-      overflow: hidden;
-      border-radius: 3px;
-      background: #0a0a0a;
-      transition: transform .5s var(--ease);
-      cursor: pointer;
-    }
-
-    .card:hover figure {
-      transform: scale(1.045);
-    }
-
-    .card figure img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      opacity: 0;
-    }
-
-    .card figure img.in {
-      opacity: 1;
-    }
-
-    body.revealed .card figure img {
-      transition: opacity .8s ease-out;
-    }
-
-    .card figure::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: rgba(0, 0, 0, var(--d, 0));
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .07);
-      border-radius: 3px;
-      pointer-events: none;
-    }
-
-    /* 3. Vignette */
-    .vig {
-      position: fixed;
-      inset: 0;
-      z-index: 12;
-      pointer-events: none;
-      background: radial-gradient(ellipse 88% 92% at 50% 50%, transparent 48%, rgba(0, 0, 0, .26) 80%, rgba(0, 0, 0, .72) 100%);
-      transition: opacity .6s var(--ease);
-    }
-
-    body.gridview .vig,
-    body.lit .vig {
-      opacity: 0;
-    }
-
-    /* 4. Flat Grid */
-    #grid {
-      position: fixed;
-      inset: 0;
-      z-index: 20;
-      overflow-y: auto;
-      overscroll-behavior-y: contain;
-      padding: calc(var(--pad) * 3.4) var(--pad) calc(var(--pad) * 4);
-      background: #000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .6s var(--ease);
-    }
-
-    body.gridview #grid {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    #grid .rows {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: clamp(10px, 1.4vw, 20px);
-      max-width: 1680px;
-      margin: 0 auto;
-    }
-
-    #grid figure {
-      aspect-ratio: 3 / 2;
-      border-radius: 3px;
-      background: #0b0b0b;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      margin: 0;
-    }
-
-    #grid figure img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      opacity: .82;
-      transition: transform .8s var(--ease), opacity .8s var(--ease);
-    }
-
-    #grid figure:hover img {
-      transform: scale(1.05);
-      opacity: 1;
-    }
-
-    #grid figcaption {
-      font-family: var(--serif);
-      font-size: 15px;
-      color: #fff;
-      background: linear-gradient(to top, rgba(0, 0, 0, .82) 0%, transparent 100%);
-      padding: 26px 14px 12px;
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      pointer-events: none;
-      opacity: 0;
-      transform: translateY(6px);
-      transition: opacity .35s var(--ease), transform .35s var(--ease);
-    }
-
-    #grid figure:hover figcaption {
-      opacity: 1;
-      transform: none;
-    }
-
-    body.gridview #stage {
-      opacity: 0;
-      filter: blur(14px);
-      pointer-events: none;
-      transition: opacity .6s var(--ease), filter .6s var(--ease);
-    }
-
-    /* 5. Chrome Elements */
-    .chrome {
-      opacity: 0;
-      transition: opacity 1.2s var(--ease) 0.15s, transform .45s var(--ease);
-    }
-
-    body.revealed .chrome {
-      opacity: 1;
-    }
-
-    /* Header */
-    header.chrome {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 60;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      padding: calc(var(--pad) * .8 + var(--safe-top)) calc(var(--pad) + var(--safe-right)) calc(var(--pad) * .35) calc(var(--pad) + var(--safe-left));
-      mix-blend-mode: difference;
-      pointer-events: none;
-    }
-
-    header.chrome * {
-      pointer-events: auto;
-    }
-
-    body.menu-open header.chrome {
-      z-index: 90;
-      mix-blend-mode: normal;
-    }
-
-    .wordmark {
-      font-family: var(--serif);
-      font-weight: 400;
-      font-size: clamp(19px, 2.1vw, 27px);
-      letter-spacing: .005em;
-      line-height: 1;
-      color: #fff;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-
-    .wordmark em {
-      font-style: normal;
-    }
-
-    body.menu-open .wordmark {
-      color: #f4f2ef;
-    }
-
-    .menu-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 5px;
-      min-width: 44px;
-      min-height: 44px;
-      padding: 8px 0 4px;
-      cursor: pointer;
-    }
-
-    .menu-label {
-      font-size: clamp(12px, 1.25vw, 15px);
-      letter-spacing: .01em;
-      color: #fff;
-      transition: opacity .35s;
-    }
-
-    body.menu-open .menu-label {
-      opacity: 0;
-    }
-
-    .menu-btn .bars {
-      position: relative;
-      display: block;
-      width: clamp(42px, 4.4vw, 62px);
-      height: clamp(16px, 2vw, 22px);
-    }
-
-    .menu-btn .bars i {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 50%;
-      height: 1px;
-      background: #fff;
-      transition: transform .35s var(--ease), width .35s var(--ease), background .35s var(--ease);
-    }
-
-    .menu-btn .bars i:nth-child(1) {
-      transform: translateY(-5px);
-    }
-
-    .menu-btn .bars i:nth-child(2) {
-      width: clamp(34px, 3.6vw, 50px);
-      right: 0;
-      left: auto;
-      transform: translateY(5px);
-    }
-
-    .menu-btn:hover .bars i:nth-child(2) {
-      transform: translateY(5px) translateX(-8px);
-    }
-
-    body.menu-open .menu-btn .bars i {
-      background: #f4f2ef;
-    }
-
-    body.menu-open .menu-btn .bars i:nth-child(1) {
-      width: 100%;
-      transform: translateY(0) rotate(45deg);
-    }
-
-    body.menu-open .menu-btn .bars i:nth-child(2) {
-      width: 100%;
-      transform: translateY(0) rotate(-45deg);
-    }
-
-    /* Photographer Bio */
-    .bio {
-      position: fixed;
-      left: calc(var(--pad) + var(--safe-left));
-      bottom: calc(var(--pad) + var(--safe-bottom));
-      z-index: 55;
-      max-width: min(320px, 46vw);
-      transition: opacity .45s var(--ease), transform .45s var(--ease);
-    }
-
-    .bio .who {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 14px;
-    }
-
-    #avatar {
-      width: 52px;
-      height: 52px;
-      border-radius: 3px;
-      object-fit: cover;
-      filter: grayscale(.15);
-    }
-
-    .bio .who b {
-      font-family: var(--serif);
-      font-weight: 400;
-      font-size: 19px;
-      letter-spacing: .01em;
-      color: var(--ink);
-    }
-
-    .bio p {
-      font-size: 12.5px;
-      line-height: 1.62;
-      color: rgba(244, 242, 239, .72);
-      margin: 0;
-    }
-
-    body.deep .bio,
-    body.gridview .bio,
-    body.lit .bio {
-      opacity: 0 !important;
-      transform: translateY(10px) !important;
-      pointer-events: none !important;
-    }
-
-    /* Colophon */
-    .colophon {
-      position: fixed;
-      right: calc(var(--pad) + var(--safe-right));
-      bottom: calc(var(--pad) + var(--safe-bottom));
-      z-index: 55;
-      font-size: 12.5px;
-      color: rgba(244, 242, 239, .72);
-      transition: opacity .45s var(--ease);
-    }
-
-    body.gridview .colophon,
-    body.lit .colophon {
-      opacity: 0 !important;
-      pointer-events: none !important;
-    }
-
-    /* Grid Toggle Button */
-    .gridbtn {
-      position: fixed;
-      left: calc(var(--pad) + var(--safe-left));
-      bottom: calc(var(--pad) + var(--safe-bottom));
-      z-index: 56;
-      width: 44px;
-      height: 44px;
-      padding: 10px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr;
-      gap: 4px;
-      opacity: 0;
-      transform: translateY(8px);
-      pointer-events: none;
-      transition: opacity .45s var(--ease), transform .45s var(--ease);
-    }
-
-    body.deep .gridbtn,
-    body.gridview .gridbtn {
-      opacity: 1;
-      transform: none;
-      pointer-events: auto;
-    }
-
-    .gridbtn b {
-      display: block;
-      background: #f4f2ef;
-      border-radius: 2px;
-      transition: background .25s, transform .35s var(--ease);
-    }
-
-    .gridbtn:hover b {
-      background: #fff;
-      transform: scale(.86);
-    }
-
-    body.gridview .gridbtn b:nth-child(1) {
-      transform: translate(3px, 3px);
-    }
-
-    body.gridview .gridbtn b:nth-child(4) {
-      transform: translate(-3px, -3px);
-    }
-
-    /* Scroll Cue */
-    .cue {
-      position: fixed;
-      left: 50%;
-      bottom: calc(var(--pad) + var(--safe-bottom) + 4px);
-      transform: translateX(-50%);
-      z-index: 54;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: .24em;
-      color: rgba(244, 242, 239, .42);
-      white-space: nowrap;
-      pointer-events: none;
-      transition: opacity .45s var(--ease);
-    }
-
-    .cue s {
-      display: inline-block;
-      width: 44px;
-      height: 1px;
-      background: rgba(244, 242, 239, .28);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .cue s::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #f4f2ef;
-      animation: sweep 2.6s var(--ease) infinite;
-    }
-
-    @keyframes sweep {
-      0% { transform: translateX(-100%); }
-      55% { transform: translateX(0); }
-      100% { transform: translateX(100%); }
-    }
-
-    body.deep .cue,
-    body.gridview .cue,
-    body.lit .cue {
-      opacity: 0 !important;
-      pointer-events: none !important;
-    }
-
-    /* 6. Fullscreen Menu */
-    #menu {
-      position: fixed;
-      inset: 0;
-      z-index: 80;
-      background: #050505;
-      display: grid;
-      place-items: center;
-      clip-path: inset(0 0 100% 0);
-      transition: clip-path .85s var(--ease);
-      pointer-events: none;
-    }
-
-    body.menu-open #menu {
-      clip-path: inset(0);
-      pointer-events: auto;
-    }
-
-    #menu nav {
-      display: flex;
-      flex-direction: column;
-      gap: clamp(4px, 1vw, 10px);
-      text-align: center;
-    }
-
-    #menu nav a {
-      font-family: var(--serif);
-      font-weight: 400;
-      font-size: clamp(34px, 7.6vw, 78px);
-      line-height: 1.08;
-      color: var(--ink);
-      text-decoration: none;
-      opacity: .55;
-      transition: opacity .3s var(--ease), letter-spacing .3s var(--ease);
-    }
-
-    #menu nav a:hover {
-      opacity: 1;
-      letter-spacing: .012em;
-    }
-
-    #menu .addr {
-      position: absolute;
-      left: calc(var(--pad) + var(--safe-left));
-      right: calc(var(--pad) + var(--safe-right));
-      bottom: calc(var(--pad) + var(--safe-bottom));
-      font-size: 12.5px;
-      color: var(--dim);
-      line-height: 1.7;
-      text-align: center;
-    }
-
-    /* 7. Lightbox */
-    #lit {
-      position: fixed;
-      inset: 0;
-      z-index: 90;
-      display: grid;
-      place-items: center;
-      padding: clamp(56px, 8vh, 84px) var(--pad);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .42s var(--ease);
-    }
-
-    body.lit #lit {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    #lit .scrim {
-      position: absolute;
-      inset: 0;
-      cursor: pointer;
-    }
-
-    #lit .plate {
-      position: relative;
-      z-index: 2;
-      width: min(72vw, 860px, calc((100vh - 230px) * 1.5));
-      transition: transform .62s var(--ease), opacity .42s var(--ease);
-    }
-
-    #lit .shot {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 3 / 2;
-      border-radius: 2px;
-      background: #0b0b0b;
-      box-shadow: 0 30px 90px rgba(0, 0, 0, .75);
-      overflow: hidden;
-    }
-
-    #lit .shot img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 2px;
-    }
-
-    #lit [data-close] {
-      position: absolute;
-      top: 12px;
-      right: 14px;
-      font-size: 12.5px;
-      min-width: 44px;
-      min-height: 44px;
-      padding: 10px 14px;
-      border: 1px solid rgba(244, 242, 239, .78);
-      border-radius: 6px;
-      background: rgba(0, 0, 0, .35);
-      color: #f4f2ef;
-      cursor: pointer;
-      z-index: 3;
-      transition: border-color .2s, background .2s;
-    }
-
-    #lit [data-close]:hover {
-      border-color: #fff;
-      background: rgba(0, 0, 0, .55);
-    }
-
-    #lit .meta {
-      display: grid;
-      grid-template-columns: minmax(0, .78fr) minmax(0, 1.22fr);
-      gap: clamp(22px, 3.2vw, 48px);
-      padding-top: 16px;
-    }
-
-    #litTitle {
-      font-family: var(--serif);
-      font-weight: 400;
-      font-size: clamp(22px, 2.15vw, 32px);
-      line-height: 1.08;
-      letter-spacing: -.01em;
-      color: var(--ink);
-      margin-bottom: 6px;
-    }
-
-    #litWhere {
-      font-size: 13px;
-      color: rgba(244, 242, 239, .62);
-    }
-
-    #litNote {
-      font-size: 13.5px;
-      line-height: 1.55;
-      color: rgba(244, 242, 239, .92);
-      margin: 0;
-    }
-
-    /* 8. Intro Film */
-    #intro {
-      position: fixed;
-      inset: 0;
-      z-index: 200;
-      background: #000;
-      display: grid;
-      place-items: center;
-      overflow: hidden;
-    }
-
-    #intro video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    #intro .veil {
-      position: absolute;
-      inset: 0;
-      background: #000;
-      opacity: 0;
-      transition: opacity 1.15s var(--ease);
-      pointer-events: none;
-    }
-
-    #intro.closing .veil {
-      opacity: 1;
-    }
-
-    #intro.gone {
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .5s linear;
-    }
-
-    #intro .fallback {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 50% 46%, #14301a 0%, #060c07 42%, #000 72%);
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    #intro.novideo .fallback {
-      opacity: 1;
-    }
-
-    #intro .skip {
-      position: absolute;
-      right: calc(var(--pad) + var(--safe-right));
-      bottom: calc(var(--pad) + var(--safe-bottom));
-      font-size: 11px;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: rgba(244, 242, 239, .6);
-      min-height: 44px;
-      padding: 10px 18px;
-      border: 1px solid rgba(244, 242, 239, .25);
-      border-radius: 999px;
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      cursor: pointer;
-      transition: color .2s, border-color .2s, opacity .35s;
-    }
-
-    #intro .skip:hover {
-      color: #fff;
-      border-color: rgba(255, 255, 255, .7);
-    }
-
-    #intro.closing .skip {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    /* 9. Splash Screen */
-    #splash {
-      position: fixed;
-      inset: 0;
-      z-index: 250;
-      background: #000;
-      display: grid;
-      place-items: center;
-      align-content: center;
-      gap: 26px;
-      transition: opacity .6s var(--ease);
-    }
-
-    #splash.out {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    #splash .mark {
-      font-family: var(--serif);
-      font-weight: 400;
-      font-size: clamp(28px, 4.4vw, 52px);
-      letter-spacing: .005em;
-      color: #f4f2ef;
-      opacity: 0;
-      animation: riseIn 1.25s var(--ease) .15s forwards;
-    }
-
-    #splash .mark em {
-      font-style: normal;
-    }
-
-    #splash .bar {
-      width: clamp(120px, 17vw, 210px);
-      height: 1px;
-      background: rgba(244, 242, 239, .16);
-      position: relative;
-    }
-
-    #splash .bar s {
-      display: block;
-      width: 100%;
-      height: 100%;
-      background: #f4f2ef;
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform .55s var(--ease);
-    }
-
-    #splash .tag {
-      font-size: 10px;
-      letter-spacing: .26em;
-      text-transform: uppercase;
-      color: rgba(244, 242, 239, .38);
-      opacity: 0;
-      animation: riseIn .9s var(--ease) .7s forwards;
-    }
-
-    @keyframes riseIn {
-      from {
-        opacity: 0;
-        transform: translateY(9px);
-      }
-      to {
-        opacity: 1;
-        transform: none;
-      }
-    }
-
-    /* 10. Custom Cursor */
-    #dot {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 19px;
-      height: 19px;
-      margin-top: -9.5px;
-      margin-left: -9.5px;
-      border-radius: 50%;
-      background: rgba(214, 212, 209, .9);
-      mix-blend-mode: difference;
-      border: 1px solid transparent;
-      pointer-events: none;
-      z-index: 300;
-      will-change: transform;
-      transition: width .35s var(--ease), height .35s var(--ease), margin .35s var(--ease), background .35s var(--ease), border-color .35s var(--ease);
-      display: none;
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-      #dot {
-        display: block;
-      }
-    }
-
-    #dot.wide {
-      width: 52px;
-      height: 52px;
-      margin-top: -26px;
-      margin-left: -26px;
-      background: rgba(244, 242, 239, .14);
-      border-color: rgba(244, 242, 239, .75);
-    }
-
-    /* Responsive Breakpoints */
-    @media (max-width: 900px) {
-      .bio {
-        max-width: min(420px, calc(100vw - var(--pad) * 2 - var(--safe-left) - var(--safe-right)));
-      }
-      .bio p {
-        font-size: 12px;
-      }
-      .colophon {
-        font-size: 11px;
-      }
-      #lit .meta {
-        grid-template-columns: 1fr;
-        gap: 10px;
-        padding-top: 14px;
-      }
-      #lit .plate {
-        width: min(92vw, calc((100dvh - 220px) * 1.5));
-      }
-      #grid .rows {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      }
-      #grid {
-        padding-top: calc(var(--pad) * 2.8 + var(--safe-top));
-      }
-    }
-
-    @media (max-width: 768px) {
-      .colophon {
-        display: none;
-      }
-      .bio {
-        max-width: calc(100vw - var(--pad) * 2 - var(--safe-left) - var(--safe-right));
-      }
-      #headline {
-        font-size: clamp(22px, 6.4vw, 34px);
-      }
-      #menu nav a {
-        font-size: clamp(28px, 9vw, 54px);
-      }
-      #menu .addr {
-        font-size: 11.5px;
-      }
-    }
-
-    @media (max-width: 640px) {
-      :root {
-        --hw: min(84vw, 360px);
-        --pad: clamp(12px, 4vw, 18px);
-      }
-      #avatar {
-        width: 42px;
-        height: 42px;
-      }
-      .bio .who b {
-        font-size: 17px;
-      }
-      .bio p {
-        font-size: 11.5px;
-        line-height: 1.55;
-      }
-      .cue {
-        display: none;
-      }
-      #lit {
-        display: block;
-        overflow-y: auto;
-        padding: calc(52px + var(--safe-top)) calc(var(--pad) + var(--safe-right)) calc(var(--pad) + var(--safe-bottom)) calc(var(--pad) + var(--safe-left));
-      }
-      #lit .plate {
-        width: 100%;
-        max-width: 560px;
-        margin: 0 auto;
-      }
-      #litTitle {
-        font-size: clamp(20px, 5.6vw, 26px);
-      }
-      #litNote {
-        font-size: 12.5px;
-        line-height: 1.58;
-      }
-      #lit [data-close] {
-        top: 8px;
-        right: 8px;
-      }
-      #grid .rows {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-      }
-      #grid figcaption {
-        opacity: 1;
-        transform: none;
-        font-size: 13px;
-      }
-      #grid {
-        padding: calc(var(--pad) * 2.8 + var(--safe-top)) calc(var(--pad) + var(--safe-right)) calc(var(--pad) * 3 + var(--safe-bottom)) calc(var(--pad) + var(--safe-left));
-      }
-    }
-
-    @media (max-width: 380px) {
-      :root {
-        --hw: min(88vw, 320px);
-      }
-      .bio .who {
-        gap: 10px;
-        margin-bottom: 10px;
-      }
-      .bio p {
-        display: none;
-      }
-      #grid .rows {
-        grid-template-columns: 1fr;
-      }
-      #menu nav {
-        gap: 2px;
-      }
-      #menu nav a {
-        font-size: clamp(24px, 10vw, 40px);
-      }
-    }
-
-    @media (max-height: 520px) and (orientation: landscape) {
-      .bio,
-      .colophon,
-      .cue {
-        display: none !important;
-      }
-      #headline {
-        font-size: clamp(18px, 4.8vh, 28px);
-      }
-      #lit {
-        padding-top: calc(36px + var(--safe-top));
-      }
-      #lit .meta {
-        padding-top: 10px;
-      }
-      #lit .plate {
-        width: min(58vw, calc((100dvh - 80px) * 1.5));
-      }
-      header.chrome {
-        padding-top: calc(8px + var(--safe-top));
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      * {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.14s !important;
-      }
-    }
-  </style>
+  <!-- Estilos Modulares em Preto e Branco -->
+  <link rel="stylesheet" href="/src/styles.css">
 </head>
 <body class="locked">
-  <!-- 1. Scroll Track (16vh scrollable) -->
+  <!-- 1. Trilho de Rolagem -->
   <div id="scrolltrack"></div>
 
-  <!-- 2. 3D Stage -->
+  <!-- 2. Palco da Esfera 3D -->
   <div id="stage">
     <div id="world">
       <div id="orb"></div>
-      <h1 id="headline"><span class="inner"><span style="--i:0">I</span> <span style="--i:1">See</span> <span style="--i:2">Through</span> <span style="--i:3">the</span> <span style="--i:4">Wild</span></span></h1>
+      <h1 id="headline">
+        <span class="inner">
+          <span style="--i:0">ETEC</span>
+          <span style="--i:1">Galery</span>
+          <span style="--i:2">Lauro</span>
+          <span style="--i:3">Gomes</span>
+          <span style="--i:4">SBC</span>
+        </span>
+      </h1>
     </div>
   </div>
 
-  <!-- 3. Vignette -->
+  <!-- 3. Vinheta Suave -->
   <div class="vig"></div>
 
-  <!-- 4. Flat Grid View -->
+  <!-- 4. Grade de Fotos Plana -->
   <div id="grid">
     <div class="rows" id="gridRows"></div>
   </div>
 
-  <!-- 5. Chrome: Header, Bio, Colophon, Grid Toggle, Scroll Cue -->
+  <!-- 5. Elementos de Interface Superior e Inferior (Chrome) -->
   <header class="chrome">
-    <a class="wordmark" href="#" aria-label="Ethan Vale">Ethan<em>Vale</em></a>
-    <button id="menuBtn" class="menu-btn" aria-expanded="false" aria-controls="menu" aria-label="Open menu">
+    <a class="wordmark" href="#" aria-label="ETEC Galery">ETEC<em>Galery</em></a>
+    <button id="menuBtn" class="menu-btn" aria-expanded="false" aria-controls="menu" aria-label="Abrir menu">
       <span class="menu-label">Menu</span>
       <span class="bars"><i></i><i></i></span>
     </button>
   </header>
 
+  <!-- Card Institucional ETEC Lauro Gomes -->
   <aside class="bio chrome">
     <div class="who">
-      <img id="avatar" src="" alt="Ethan Vale">
-      <b>Ethan Vale</b>
+      <div class="etec-symbol" title="ETEC Lauro Gomes">
+        <!-- Emblema Geométrico Monocromático ETEC / Centro Paula Souza -->
+        <svg width="26" height="26" viewBox="0 0 100 100" fill="none">
+          <rect width="100" height="100" rx="8" fill="#141414"/>
+          <path d="M20 26H80V36H20V26Z" fill="#f4f2ef"/>
+          <path d="M20 45H68V55H20V45Z" fill="#8c8783"/>
+          <path d="M20 64H80V74H20V64Z" fill="#f4f2ef"/>
+          <circle cx="76" cy="50" r="5" fill="#f4f2ef"/>
+        </svg>
+      </div>
+      <div>
+        <b>ETEC Lauro Gomes</b>
+      </div>
     </div>
-    <p>Wildlife photography is less about taking pictures and more about learning when not to move. Every frame in this archive was captured in natural conditions without intervention.</p>
+    <p>Escola Técnica Estadual Lauro Gomes — Centro Paula Souza. Tradição e excelência no ensino técnico na Vila Baeta Neves, São Bernardo do Campo desde 1964. Um acervo vivo de memórias e projetos.</p>
   </aside>
 
-  <div class="colophon chrome">Field Notes 2026</div>
+  <div class="colophon chrome">ETEC Lauro Gomes · 2026</div>
 
-  <button id="gridBtn" class="gridbtn" aria-label="Toggle grid view">
+  <button id="gridBtn" class="gridbtn" aria-label="Alternar exibição em grade">
     <b></b><b></b><b></b><b></b>
   </button>
 
   <div class="cue chrome">
     <s></s>
-    <span>Drag to rotate</span>
+    <span>Arraste para explorar</span>
   </div>
 
-  <!-- 6. Fullscreen Menu -->
-  <div id="menu" role="dialog" aria-modal="true" aria-label="Site Menu">
+  <!-- 6. Menu em Tela Cheia (com acesso ao Studio e à Localização Baeta Neves) -->
+  <div id="menu" role="dialog" aria-modal="true" aria-label="Menu Principal">
     <nav>
-      <a href="#" data-grid>The Archive</a>
-      <a href="#" data-close-menu>Field Notes</a>
-      <a href="#" data-close-menu>Studio</a>
-      <a href="#" data-close-menu>Contact</a>
+      <a href="#" data-grid>A Galeria</a>
+      <a href="#" id="menuStudioLink">Studio & Upload</a>
+      <a href="#" id="menuContactLink">Localização & Contato</a>
+      <a href="#" data-close-menu>Fechar Menu</a>
     </nav>
     <div class="addr">
-      Nairobi · Cape Town · Reykjavík<br>studio@ethanvale.photo
+      Av. Pereira Barreto, 400 · Vila Baeta Neves, São Bernardo do Campo - SP<br>
+      CEP: 09751-000 · Tel: (11) 4125-2288 · contato@etelg.com.br
     </div>
   </div>
 
-  <!-- 7. Lightbox -->
-  <div id="lit" role="dialog" aria-modal="true" aria-label="Photo Lightbox">
+  <!-- 7. Lightbox de Exibição de Fotografia -->
+  <div id="lit" role="dialog" aria-modal="true" aria-label="Visualizador de Fotos">
     <div class="scrim" id="litScrim"></div>
     <div class="plate">
       <div class="shot">
         <img id="litImg" src="" alt="">
-        <button data-close aria-label="Close photo">Close</button>
+        <button data-close aria-label="Fechar foto">Fechar</button>
       </div>
       <div class="meta">
         <div>
@@ -1168,841 +118,157 @@
     </div>
   </div>
 
-  <!-- 8. Intro Film -->
+  <!-- 8. Modal de Localização & Contatos (SBC Baeta Neves) -->
+  <div id="contactModal" class="custom-modal" role="dialog" aria-modal="true" aria-label="Contato e Localização ETEC">
+    <div class="modal-scrim" data-close-contact></div>
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <h2>Localização & Contato</h2>
+          <p>ETEC Lauro Gomes — Centro Paula Souza</p>
+        </div>
+        <button class="modal-close-btn" data-close-contact aria-label="Fechar janela">
+          ✕
+        </button>
+      </div>
+
+      <div class="contact-grid">
+        <div class="info-card">
+          <div class="info-label">Endereço Oficial</div>
+          <div class="info-value">Avenida Pereira Barreto, 400</div>
+          <div class="info-sub">Vila Baeta Neves — São Bernardo do Campo, SP</div>
+          <div class="cep-badge" id="cepBadge" title="Clique para copiar o CEP">
+            <span>CEP: 09751-000</span>
+            <span style="font-size:10px; opacity:0.6;">(Copiar)</span>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-label">Telefones & Atendimento</div>
+          <div class="info-value">(11) 4125-2288</div>
+          <div class="info-sub">(11) 4125-2266 / (11) 4125-2313</div>
+          <div class="info-sub" style="margin-top:6px;">Segunda a Sexta: 07h00 às 22h45</div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-label">E-mails Institucionais</div>
+          <div class="info-value">contato@etelg.com.br</div>
+          <div class="info-sub">secretaria@etelg.com.br</div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-label">Pontos de Referência</div>
+          <div class="info-value">Corredor de Trólebus ABD</div>
+          <div class="info-sub">Ao lado do Shopping Metrópole e Parque da Juventude SBC.</div>
+        </div>
+      </div>
+
+      <div class="map-preview-card">
+        <div style="font-weight:400; font-size:15px; color:var(--ink-pure); margin-bottom:4px;">
+          Navegação e Trajeto
+        </div>
+        <div style="font-size:13px; color:var(--dim); line-height:1.5;">
+          Acesse a ETEC Lauro Gomes facilmente pelas principais vias de São Bernardo do Campo ou pelo corredor metropolitano de transporte.
+        </div>
+        <div class="map-actions">
+          <a class="btn-action btn-primary" href="https://maps.google.com/?q=Etec+Lauro+Gomes+Avenida+Pereira+Barreto+400+Sao+Bernardo+do+Campo" target="_blank" rel="noopener">
+            Abrir no Google Maps
+          </a>
+          <a class="btn-action btn-secondary" href="https://www.waze.com/ul?q=Etec+Lauro+Gomes" target="_blank" rel="noopener">
+            Traçar rota no Waze
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. Modal do Studio de Upload de Imagens -->
+  <div id="studioModal" class="custom-modal" role="dialog" aria-modal="true" aria-label="Studio ETEC Upload">
+    <div class="modal-scrim" data-close-studio></div>
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <h2>Studio ETEC</h2>
+          <p>Adicione novas fotos ou artes ao acervo interativo 3D</p>
+        </div>
+        <button class="modal-close-btn" data-close-studio aria-label="Fechar janela">
+          ✕
+        </button>
+      </div>
+
+      <form class="studio-form" id="studioForm">
+        <div class="dropzone" id="dropzone">
+          <input type="file" id="fileInput" accept="image/png, image/jpeg, image/webp" required>
+          <div class="dropzone-icon">📷</div>
+          <div class="dropzone-text">Arraste uma foto ou clique para selecionar</div>
+          <div class="dropzone-sub">PNG, JPG ou WEBP (alta definição)</div>
+          <img id="uploadPreview" class="upload-preview" alt="Prévia da foto">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="photoTitle">Título do Registro</label>
+            <input class="form-input" type="text" id="photoTitle" placeholder="Ex: Feira de Ciências 2026" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="photoPlace">Local / Curso</label>
+            <input class="form-input" type="text" id="photoPlace" placeholder="Ex: Lab de Automação · Baeta Neves" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="photoFormat">Formato na Esfera</label>
+            <select class="form-select" id="photoFormat">
+              <option value="landscape">Paisagem (Padrão 3:2)</option>
+              <option value="portrait">Retrato / Vertical (Tall)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="photoAuthor">Autor / Turma</label>
+            <input class="form-input" type="text" id="photoAuthor" placeholder="Ex: Alunos do 3º Informática">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="photoNote">Descrição / Nota</label>
+          <textarea class="form-textarea" id="photoNote" rows="3" placeholder="Descreva o experimento, o evento ou o momento registrado..." required></textarea>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:10px;">
+          <button type="button" class="btn-action btn-secondary" data-close-studio>Cancelar</button>
+          <button type="submit" class="btn-action btn-primary" id="publishBtn">
+            Publicar na Galeria 3D
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notificação -->
+  <div id="toast">
+    <span id="toastMsg">Operação realizada com sucesso!</span>
+  </div>
+
+  <!-- 10. Filme de Introdução -->
   <div id="intro">
     <video id="film" muted playsinline autoplay preload="auto" disablepictureinpicture></video>
     <div class="fallback"></div>
     <div class="veil"></div>
-    <button class="skip" id="skip">Skip</button>
+    <button class="skip" id="skip">Pular Intro</button>
   </div>
 
-  <!-- 9. Splash Screen -->
+  <!-- 11. Tela de Carregamento (Splash) -->
   <div id="splash">
-    <div class="mark">Ethan<em>Vale</em></div>
+    <div class="mark">ETEC<em>Galery</em></div>
     <div class="bar"><s id="bar"></s></div>
-    <div class="tag">Field Notes 2026</div>
+    <div class="tag">Lauro Gomes · Baeta Neves 2026</div>
   </div>
 
-  <!-- 10. Custom Cursor -->
+  <!-- 12. Cursor Interativo -->
   <div id="dot"></div>
 
-  <script>
-    (function () {
-      'use strict';
-
-      const CDN_BASE = 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/';
-      const FILM_URL = 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260922_195107_ed3f055a-3a13-4a71-b743-e10310454246.mp4';
-      const AVATAR_ID = 'hf_20260922_194417_a455843c-d8db-461c-8ef6-74a325d2472c';
-
-      const STILLS = [
-        {
-          id: 'hf_20260922_194349_26ffdbfd-ac5e-49e9-a07d-c06d3f7cb4cb',
-          title: 'Before the Dust Settled',
-          place: 'South Africa · Limpopo Province',
-          note: 'Wildlife photography is rarely about pressing the shutter. Most of the work happens earlier — waiting, staying still, and accepting that nature decides if the frame exists. This encounter lasted less than a minute.'
-        },
-        {
-          id: 'hf_20260922_194350_5546ea3d-6336-42c7-a59f-06165c5802be',
-          title: 'The Long Walk Home',
-          place: 'Kenya · Maasai Mara',
-          note: 'A matriarch leading her herd across open grass at the end of the day. I stayed low and let them close the distance on their own terms.'
-        },
-        {
-          id: 'hf_20260922_194349_b4533691-cb49-41d4-b56c-51f0fdcbe250',
-          title: 'Something Understood',
-          place: 'Botswana · Okavango Delta',
-          note: 'He held the look for about four seconds. Long enough to be certain neither of us intended to move first.'
-        },
-        {
-          id: 'hf_20260922_194349_e588abd3-1bfa-4918-894f-05632cc51ccc',
-          title: 'Nine Hours of Nothing',
-          place: 'Finland · Lapland',
-          note: 'A full day in a hide for a single turn of the head. That ratio is normal and I have stopped resenting it.'
-        },
-        {
-          id: 'hf_20260922_194350_28d92c80-de66-41cb-911e-b3b44aebe1f5',
-          title: 'Borrowed Trust',
-          place: 'Scotland · Cairngorms',
-          note: 'She had learned the shape of a person and decided it was uninteresting. That indifference is the rarest thing in this work.'
-        },
-        {
-          id: 'hf_20260922_194349_04e89718-4214-4aff-bac5-490462bbfe2f',
-          title: 'Small Weather',
-          place: 'Costa Rica · Osa Peninsula',
-          note: 'Rain had just stopped. Everything on that branch was the size of a thumbnail and lit like a stage.'
-        },
-        {
-          id: 'hf_20260922_194417_2c031e22-2fad-4c81-a544-83cd6bba1c33',
-          title: 'Against the Weather',
-          place: 'Alaska · Chilkat Valley',
-          note: 'Shot at a thousandth of a second into a rising storm. The light lasted eleven minutes.'
-        },
-        {
-          id: 'hf_20260922_194349_a39c3226-7848-4b15-b840-98ad8aec467b',
-          title: 'The Pale Edge',
-          place: 'India · Bandhavgarh',
-          note: 'Almost entirely hidden. I only found the frame because the foliage stopped moving in the wrong place.'
-        },
-        {
-          id: 'hf_20260922_194417_555e4d90-f35f-4a1a-8c75-def1e8b71988',
-          title: 'Perfect Arithmetic',
-          place: 'Indonesia · Raja Ampat',
-          note: 'Coiled with a precision that looks designed. Nothing about it is — it is just the cheapest way to hold heat.'
-        },
-        {
-          id: 'hf_20260922_194417_e525a243-03c8-454b-83b4-60f541baf70a',
-          title: 'Shallow Water',
-          place: 'French Polynesia · Fakarava',
-          note: 'Three metres down on a single breath. It passed close enough that I stopped composing and simply held the camera still.'
-        },
-        {
-          id: 'hf_20260922_194349_ec830e6f-b8e6-4569-8540-ee7f33902c53',
-          title: 'Two of Nine',
-          place: 'India · Ranthambore',
-          note: 'Siblings resting out the afternoon heat. The second one never opened its eyes.'
-        },
-        {
-          id: 'hf_20260922_194417_35a9af5f-bd07-45a7-bb73-08b47d19d530',
-          title: 'Low Ground',
-          place: 'Nepal · Chitwan',
-          note: 'Flat on the ground at her eye level, which is the only honest angle for an animal that hunts from there.'
-        },
-        {
-          id: 'hf_20260922_194416_30e307a9-1265-45c3-a1a0-5c6fa5bb9f8d',
-          title: 'Everything at Once',
-          place: 'Iceland · Southern Coast',
-          note: 'Free horses on a black beach at dusk. I panned and accepted whatever the frame gave back.'
-        },
-        {
-          id: 'hf_20260922_194417_ff5cb9f8-8eed-4bfb-bb08-11256da92eae',
-          title: 'White on White',
-          place: 'Canada · Ellesmere Island',
-          note: 'Snow removes every reference for exposure. The only reliable meter left is the eyes.'
-        },
-        {
-          id: 'hf_20260922_194418_1d9bff4a-4971-4944-9e49-d72e755ceeb0',
-          title: 'Census',
-          place: 'Namibia · Etosha',
-          note: 'Two of roughly sixteen thousand left. The number is the reason the frame exists.'
-        },
-        {
-          id: 'hf_20260922_194349_75e53821-0807-4ebc-992d-34bae0ec2ce6',
-          title: 'The Whole Field',
-          place: 'France · Provence',
-          note: 'Four millimetres of animal. At this magnification a breath of wind is an earthquake.'
-        },
-        {
-          id: 'hf_20260922_194417_5a227847-3796-4438-805d-7e66e9538205',
-          title: 'First Season',
-          place: 'Germany · Bavarian Forest',
-          note: 'Days old and already still enough to disappear. Stillness is the first thing anything here learns.'
-        },
-        {
-          id: 'hf_20260922_194350_b49aa67e-0401-4029-af4f-f6ac3ee83398',
-          title: 'Listening Posture',
-          place: 'Tanzania · Serengeti',
-          note: 'Ears forward, weight on the back legs. She heard something I never did.'
-        },
-        {
-          id: 'hf_20260922_194349_89b82779-3a46-4c55-b7c5-f4a0fd955874',
-          title: 'A Line of Red',
-          place: 'Spain · Fuente de Piedra',
-          note: 'Underexposed by two stops until only the shape survived.'
-        },
-        {
-          id: 'hf_20260922_194416_47e18c62-253a-42e1-97a9-9e5f6a6b8d59',
-          title: 'Left Behind',
-          place: 'Studio · Reykjavík',
-          note: 'Found beneath a roost at first light. The only frame in this archive an animal agreed to in advance.',
-          tall: true
-        },
-        {
-          id: 'hf_20260922_194417_a455843c-d8db-461c-8ef6-74a325d2472c',
-          title: 'The Other Side',
-          place: 'Uganda · Kibale Forest',
-          note: 'Taken by a colleague between two long waits. Proof, mostly, that someone is holding the camera.'
-        }
-      ];
-
-      // DOM Elements
-      const stage = document.getElementById('stage');
-      const world = document.getElementById('world');
-      const orb = document.getElementById('orb');
-      const headline = document.getElementById('headline');
-      const splash = document.getElementById('splash');
-      const barEl = document.getElementById('bar');
-      const intro = document.getElementById('intro');
-      const film = document.getElementById('film');
-      const skipBtn = document.getElementById('skip');
-      const avatarImg = document.getElementById('avatar');
-      const gridRows = document.getElementById('gridRows');
-      const menuBtn = document.getElementById('menuBtn');
-      const gridBtn = document.getElementById('gridBtn');
-      const lit = document.getElementById('lit');
-      const litScrim = document.getElementById('litScrim');
-      const litPlate = lit.querySelector('.plate');
-      const litImg = document.getElementById('litImg');
-      const litTitle = document.getElementById('litTitle');
-      const litWhere = document.getElementById('litWhere');
-      const litNote = document.getElementById('litNote');
-      const dot = document.getElementById('dot');
-
-      // Sphere math variables
-      const N = STILLS.length;
-      const GA = Math.PI * (3 - Math.sqrt(5));
-      const cardNodes = [];
-      const cardVectors = [];
-      const gridFigures = [];
-      const downscaledUrls = [];
-
-      let R = 300;
-      let cw = 140;
-      let perspNum = 1150;
-      let lastW = window.innerWidth;
-      let lastH = window.innerHeight;
-
-      // Camera State
-      let spin = 0;
-      let tilt = -4;
-      let camZ = 0;
-      let camZTarget = 0;
-      let dragX = 0;
-      let dragY = 0;
-      let velX = 0;
-      let velY = 0;
-      let isDragging = false;
-      let focusedIndex = -1;
-      let currentSourceEl = null;
-      let litToken = 0;
-
-      // Pointer drag state
-      let downX = 0;
-      let downY = 0;
-      let lastPointerX = 0;
-      let lastPointerY = 0;
-      let isTouchPointer = false;
-      let touchDecided = false;
-      let dragCardCandidate = null;
-
-      // Mouse cursor state
-      let mouseX = window.innerWidth / 2;
-      let mouseY = window.innerHeight / 2;
-      let dotX = mouseX;
-      let dotY = mouseY;
-
-      // Setup Fibonacci cards
-      for (let i = 0; i < N; i++) {
-        const item = STILLS[i];
-        const y = 1 - (i / (N - 1)) * 2;
-        const rad = Math.sqrt(Math.max(0, 1 - y * y));
-        const theta = i * GA;
-        const x = Math.cos(theta) * rad;
-        const z = Math.sin(theta) * rad;
-        const lat = Math.asin(y) * 180 / Math.PI;
-        const lon = Math.atan2(x, z) * 180 / Math.PI;
-
-        cardVectors.push({ x, y, z, lat, lon });
-
-        // Sphere Card
-        const card = document.createElement('div');
-        card.className = 'card' + (item.tall ? ' tall' : '');
-        card.dataset.idx = i;
-
-        const fig = document.createElement('figure');
-        const img = document.createElement('img');
-        img.alt = item.title;
-        fig.appendChild(img);
-        card.appendChild(fig);
-        orb.appendChild(card);
-        cardNodes.push(card);
-
-        // Grid Figure
-        const gFig = document.createElement('figure');
-        gFig.dataset.idx = i;
-        const gImg = document.createElement('img');
-        gImg.alt = item.title;
-        const gCap = document.createElement('figcaption');
-        gCap.textContent = item.title;
-        gFig.appendChild(gImg);
-        gFig.appendChild(gCap);
-        gridRows.appendChild(gFig);
-        gridFigures.push(gFig);
-
-        gFig.addEventListener('click', () => {
-          openLightbox(i, gFig);
-        });
-      }
-
-      function getCardDecodeMax(w) {
-        if (w <= 380) return 420;
-        if (w <= 640) return 520;
-        if (w <= 900) return 640;
-        return 760;
-      }
-
-      function downscaleImage(url, maxDim) {
-        return new Promise((resolve) => {
-          const img = new Image();
-          img.crossOrigin = 'anonymous';
-          img.onload = () => {
-            try {
-              if (!img.naturalWidth || img.naturalWidth <= maxDim) {
-                return resolve(url);
-              }
-              const scale = maxDim / img.naturalWidth;
-              const canvas = document.createElement('canvas');
-              canvas.width = maxDim;
-              canvas.height = Math.round(img.naturalHeight * scale);
-              const ctx = canvas.getContext('2d');
-              if (!ctx) return resolve(url);
-              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-              canvas.toBlob(
-                (blob) => {
-                  if (!blob) return resolve(url);
-                  resolve(URL.createObjectURL(blob));
-                },
-                'image/webp',
-                0.88
-              );
-            } catch (e) {
-              resolve(url);
-            }
-          };
-          img.onerror = () => resolve(url);
-          img.src = url;
-        });
-      }
-
-      // Layout & Sphere Radius
-      function layoutSphere() {
-        const w = window.innerWidth;
-        const h = window.innerHeight;
-        lastW = w;
-        lastH = h;
-
-        const hr = w <= 380 ? 0.38 : (w <= 640 ? 0.42 : 0.46);
-        const wr = w <= 380 ? 0.48 : (w <= 640 ? 0.52 : 0.58);
-        const floor = w <= 380 ? 108 : (w <= 640 ? 120 : 155);
-        R = Math.max(floor, Math.min(480, h * hr, w * wr));
-
-        const scale = w <= 380 ? 0.44 : (w <= 640 ? 0.46 : 0.47);
-        cw = Math.round(Math.max(72, R * scale));
-        document.documentElement.style.setProperty('--cw', cw + 'px');
-
-        perspNum = w <= 380 ? 620 : (w <= 640 ? 760 : (w <= 900 ? 920 : 1150));
-        document.documentElement.style.setProperty('--persp', perspNum + 'px');
-
-        for (let i = 0; i < N; i++) {
-          const card = cardNodes[i];
-          const u = cardVectors[i];
-          card.style.transform = `translate3d(${u.x * R}px, ${-u.y * R}px, ${u.z * R}px) rotateY(${u.lon}deg) rotateX(${u.lat}deg)`;
-        }
-      }
-
-      // Initial layout before splash ends
-      layoutSphere();
-
-      // Camera Loop
-      function renderFrame() {
-        const isLit = document.body.classList.contains('lit');
-
-        if (!isDragging && !isLit) {
-          dragX += velX;
-          dragY += velY;
-          velX *= 0.94;
-          velY *= 0.94;
-          if (Math.abs(velX) < 0.002) velX = 0;
-          if (Math.abs(velY) < 0.002) velY = 0;
-
-          // Clamp pitch so tilt + dragY stays in [-32, 32]
-          if (tilt + dragY > 32) dragY = 32 - tilt;
-          if (tilt + dragY < -32) dragY = -32 - tilt;
-        }
-
-        const maxScroll = window.innerHeight * 0.16;
-        const p = maxScroll > 0 ? Math.min(1, Math.max(0, window.scrollY / maxScroll)) : 0;
-
-        camZTarget = p * Math.min(64, R * 0.12);
-        camZ += (camZTarget - camZ) * 0.075;
-
-        const sx = tilt + dragY;
-        const sy = spin + dragX;
-
-        // Exactly: translateZ(camZ px) rotateY(sy deg) rotateX(sx deg)
-        world.style.transform = `translateZ(${camZ}px) rotateY(${sy}deg) rotateX(${sx}deg)`;
-
-        // Headline: exactly rotateX(-sx deg) rotateY(-sy deg) translateZ(R * 0.62 px)
-        headline.style.transform = `rotateX(${-sx}deg) rotateY(${-sy}deg) translateZ(${R * 0.62}px)`;
-        headline.style.opacity = Math.max(0, 1 - p * 0.55);
-
-        // Per card depth calculations
-        const rx = sx * Math.PI / 180;
-        const ry = sy * Math.PI / 180;
-        const cosRx = Math.cos(rx);
-        const sinRx = Math.sin(rx);
-        const cosRy = Math.cos(ry);
-        const sinRy = Math.sin(ry);
-
-        const shade = 1 - Math.min(1, p * 1.6);
-        const near = perspNum * 0.66;
-
-        for (let i = 0; i < N; i++) {
-          const card = cardNodes[i];
-          const u = cardVectors[i];
-          const cx = u.x;
-          const cy = -u.y;
-          const cz = u.z;
-
-          // Rotate by rotateX(rx), then rotateY(ry)
-          const y1 = cy * cosRx - cz * sinRx;
-          const z1 = cy * sinRx + cz * cosRx;
-          const zf = -cx * sinRy + z1 * cosRy;
-
-          const base = 0.14 + 0.86 * Math.pow((zf + 1) / 2, 0.85);
-          let dim = shade * (1 - base);
-          const cardDist = zf * R + camZ;
-          let fade = 1;
-          if (cardDist > near) {
-            fade = Math.max(0, 1 - (cardDist - near) / 190);
-          }
-
-          if (isLit) {
-            dim = Math.min(1, dim + 0.78);
-            if (i === focusedIndex) {
-              fade = 0;
-            }
-          }
-
-          dim = Math.round(dim * 100) / 100;
-          fade = Math.round(fade * 100) / 100;
-
-          if (card._dim !== dim) {
-            card._dim = dim;
-            card.style.setProperty('--d', dim);
-          }
-          if (card._fade !== fade) {
-            card._fade = fade;
-            card.style.opacity = fade;
-          }
-        }
-
-        requestAnimationFrame(renderFrame);
-      }
-
-      // Synchronous initial frame and start camera loop
-      renderFrame();
-
-      // Asset Loading and Splash
-      const totalAssets = N + 1; // 21 stills + 1 film
-      let loadedAssets = 0;
-      const startTime = performance.now();
-      let splashDone = false;
-
-      function checkSplashReady() {
-        if (splashDone) return;
-        const elapsed = performance.now() - startTime;
-        if (loadedAssets >= totalAssets || elapsed >= 9000) {
-          if (elapsed < 1150) {
-            setTimeout(checkSplashReady, 1150 - elapsed);
-            return;
-          }
-          finishSplash();
-        }
-      }
-
-      function updateSplashProgress() {
-        loadedAssets++;
-        const prog = Math.min(1, loadedAssets / totalAssets);
-        if (barEl) {
-          barEl.style.transform = `scaleX(${prog})`;
-        }
-        checkSplashReady();
-      }
-
-      function finishSplash() {
-        if (splashDone) return;
-        splashDone = true;
-        if (barEl) barEl.style.transform = 'scaleX(1)';
-        setTimeout(() => {
-          splash.classList.add('out');
-          startFilm();
-          setTimeout(() => {
-            if (splash.parentNode) splash.parentNode.removeChild(splash);
-          }, 950);
-        }, 250);
-      }
-
-      // Backstop for splash
-      setTimeout(finishSplash, 9000);
-
-      // Downscale stills
-      const decodeCap = getCardDecodeMax(window.innerWidth);
-      STILLS.forEach((item, idx) => {
-        const thumbUrl = CDN_BASE + item.id + '_min.webp';
-        downscaleImage(thumbUrl, decodeCap).then((finalUrl) => {
-          downscaledUrls[idx] = finalUrl;
-          const sphereImg = cardNodes[idx].querySelector('img');
-          const gridImg = gridFigures[idx].querySelector('img');
-          sphereImg.src = finalUrl;
-          sphereImg.classList.add('in');
-          gridImg.src = finalUrl;
-          updateSplashProgress();
-        });
-      });
-
-      // Downscale Avatar
-      downscaleImage(CDN_BASE + AVATAR_ID + '_min.webp', 160).then((url) => {
-        avatarImg.src = url;
-      });
-
-      // Video Intro setup
-      film.src = FILM_URL;
-      film.muted = true;
-      film.defaultMuted = true;
-      film.playsInline = true;
-      film.setAttribute('webkit-playsinline', '');
-
-      film.addEventListener('loadeddata', () => updateSplashProgress(), { once: true });
-      film.addEventListener('error', () => {
-        intro.classList.add('novideo');
-        updateSplashProgress();
-        setTimeout(revealPage, 1300);
-      }, { once: true });
-
-      let pageRevealed = false;
-      function revealPage() {
-        if (pageRevealed) return;
-        pageRevealed = true;
-        intro.classList.add('closing');
-        document.body.classList.remove('locked');
-        document.documentElement.style.overflow = '';
-
-        layoutSphere();
-        requestAnimationFrame(layoutSphere);
-        setTimeout(() => {
-          layoutSphere();
-          document.body.classList.add('revealed');
-          intro.classList.add('gone');
-          setTimeout(() => {
-            if (intro.parentNode) intro.parentNode.removeChild(intro);
-          }, 700);
-        }, 1000);
-      }
-
-      function startFilm() {
-        if (film.currentTime > 0.05) {
-          film.currentTime = 0;
-        }
-        film.playbackRate = 2;
-
-        const playPromise = film.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(() => {
-            // Autoplay blocked, wait for user gesture or 2600ms timeout
-            const gesturePlay = () => {
-              film.play().catch(() => {});
-              window.removeEventListener('pointerdown', gesturePlay);
-              window.removeEventListener('keydown', gesturePlay);
-              window.removeEventListener('touchstart', gesturePlay);
-            };
-            window.addEventListener('pointerdown', gesturePlay, { once: true });
-            window.addEventListener('keydown', gesturePlay, { once: true });
-            window.addEventListener('touchstart', gesturePlay, { once: true });
-            setTimeout(() => {
-              if (film.paused) revealPage();
-            }, 2600);
-          });
-        }
-
-        film.addEventListener('play', () => {
-          film.playbackRate = 2;
-        });
-
-        film.addEventListener('playing', () => {
-          film.playbackRate = 2;
-          const dur = film.duration && isFinite(film.duration) ? film.duration : 6;
-          const remaining = Math.max(0.3, (dur - film.currentTime - 0.45) / 2);
-          setTimeout(revealPage, remaining * 1000);
-        }, { once: true });
-
-        film.addEventListener('ended', revealPage, { once: true });
-        setTimeout(revealPage, 14000);
-      }
-
-      skipBtn.addEventListener('click', () => revealPage());
-
-      // Pointer Dragging on #stage
-      stage.addEventListener('pointerdown', (e) => {
-        if (document.body.classList.contains('lit')) return;
-        const el = document.elementFromPoint(e.clientX, e.clientY);
-        dragCardCandidate = el ? el.closest('.card') : null;
-        downX = e.clientX;
-        downY = e.clientY;
-        lastPointerX = e.clientX;
-        lastPointerY = e.clientY;
-        velX = 0;
-        velY = 0;
-
-        if (e.pointerType === 'touch') {
-          isTouchPointer = true;
-          touchDecided = false;
-          isDragging = false;
-        } else {
-          isTouchPointer = false;
-          touchDecided = true;
-          isDragging = true;
-          try { stage.setPointerCapture(e.pointerId); } catch (err) {}
-        }
-      });
-
-      stage.addEventListener('pointermove', (e) => {
-        if (!isTouchPointer && !isDragging) return;
-        const dx = e.clientX - lastPointerX;
-        const dy = e.clientY - lastPointerY;
-        const totalDx = e.clientX - downX;
-        const totalDy = e.clientY - downY;
-        const dist = Math.hypot(totalDx, totalDy);
-
-        if (isTouchPointer && !touchDecided) {
-          if (dist >= 10) {
-            touchDecided = true;
-            if (Math.abs(totalDy) > Math.abs(totalDx) * 1.15) {
-              isDragging = false;
-              dragCardCandidate = null;
-              return;
-            } else {
-              isDragging = true;
-              try { stage.setPointerCapture(e.pointerId); } catch (err) {}
-            }
-          } else {
-            return;
-          }
-        }
-
-        if (isDragging) {
-          lastPointerX = e.clientX;
-          lastPointerY = e.clientY;
-          velX = dx * 0.13;
-          velY = dy * 0.13;
-          dragX += velX;
-          dragY += velY;
-
-          if (tilt + dragY > 32) dragY = 32 - tilt;
-          if (tilt + dragY < -32) dragY = -32 - tilt;
-        }
-      });
-
-      function onPointerEnd(e) {
-        const isCoarse = window.matchMedia('(pointer: coarse)').matches;
-        const slop = isCoarse ? 14 : 6;
-        const dist = Math.hypot(e.clientX - downX, e.clientY - downY);
-
-        if (stage.hasPointerCapture && stage.hasPointerCapture(e.pointerId)) {
-          try { stage.releasePointerCapture(e.pointerId); } catch (err) {}
-        }
-
-        if (dist <= slop && dragCardCandidate) {
-          const idx = parseInt(dragCardCandidate.dataset.idx, 10);
-          if (!isNaN(idx)) {
-            openLightbox(idx, dragCardCandidate);
-          }
-        }
-
-        isDragging = false;
-        isTouchPointer = false;
-        dragCardCandidate = null;
-      }
-
-      stage.addEventListener('pointerup', onPointerEnd);
-      stage.addEventListener('pointercancel', onPointerEnd);
-
-      // Scroll Tracking (16vh max scroll)
-      window.addEventListener('scroll', () => {
-        const maxScroll = window.innerHeight * 0.16;
-        if (window.scrollY > maxScroll) {
-          window.scrollTo(0, maxScroll);
-        }
-        const p = maxScroll > 0 ? window.scrollY / maxScroll : 0;
-        if (p > 0.02) {
-          document.body.classList.add('deep');
-        } else {
-          document.body.classList.remove('deep');
-        }
-      }, { passive: true });
-
-      // Resize and orientation handling
-      function handleResize() {
-        const w = window.innerWidth;
-        const h = window.innerHeight;
-        if (Math.abs(w - lastW) > 20 || Math.abs(h - lastH) > 20) {
-          layoutSphere();
-        }
-      }
-
-      window.addEventListener('resize', handleResize);
-      window.addEventListener('orientationchange', () => {
-        setTimeout(layoutSphere, 220);
-      });
-      if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', layoutSphere);
-        window.visualViewport.addEventListener('scroll', layoutSphere);
-      }
-
-      // Lightbox Functions
-      function openLightbox(idx, sourceEl) {
-        if (idx < 0 || idx >= STILLS.length) return;
-        focusedIndex = idx;
-        currentSourceEl = sourceEl;
-        const item = STILLS[idx];
-
-        litTitle.textContent = item.title;
-        litWhere.textContent = item.place;
-        litNote.textContent = item.note;
-
-        const thumbUrl = downscaledUrls[idx] || (CDN_BASE + item.id + '_min.webp');
-        litImg.src = thumbUrl;
-
-        const myToken = ++litToken;
-        const fullImg = new Image();
-        fullImg.onload = () => {
-          if (myToken === litToken && document.body.classList.contains('lit')) {
-            litImg.src = CDN_BASE + item.id + '.png';
-          }
-        };
-        fullImg.src = CDN_BASE + item.id + '.png';
-
-        document.body.classList.add('lit');
-
-        // FLIP Animation
-        if (sourceEl) {
-          const srcRect = sourceEl.getBoundingClientRect();
-          const plateRect = litPlate.getBoundingClientRect();
-          const dx = (srcRect.left + srcRect.width / 2) - (plateRect.left + plateRect.width / 2);
-          const dy = (srcRect.top + srcRect.height / 2) - (plateRect.top + plateRect.height / 2);
-          const s = Math.max(0.04, srcRect.width / (plateRect.width || 1));
-
-          litPlate.style.transition = 'none';
-          litPlate.style.transform = `translate(${dx}px, ${dy}px) scale(${s})`;
-          litPlate.style.opacity = '0';
-          litPlate.offsetHeight;
-          litPlate.style.transition = '';
-          litPlate.style.transform = '';
-          litPlate.style.opacity = '';
-        }
-      }
-
-      function closeLightbox() {
-        if (!document.body.classList.contains('lit')) return;
-        const src = currentSourceEl;
-        focusedIndex = -1;
-        document.body.classList.remove('lit');
-
-        if (src && litPlate) {
-          const srcRect = src.getBoundingClientRect();
-          const plateRect = litPlate.getBoundingClientRect();
-          const dx = (srcRect.left + srcRect.width / 2) - (plateRect.left + plateRect.width / 2);
-          const dy = (srcRect.top + srcRect.height / 2) - (plateRect.top + plateRect.height / 2);
-          const s = Math.max(0.04, srcRect.width / (plateRect.width || 1));
-
-          litPlate.style.transform = `translate(${dx}px, ${dy}px) scale(${s})`;
-          litPlate.style.opacity = '0';
-          setTimeout(() => {
-            litPlate.style.transition = 'none';
-            litPlate.style.transform = '';
-            litPlate.style.opacity = '';
-            litPlate.offsetHeight;
-            litPlate.style.transition = '';
-          }, 640);
-        }
-        currentSourceEl = null;
-      }
-
-      lit.querySelector('[data-close]').addEventListener('click', closeLightbox);
-      litScrim.addEventListener('click', closeLightbox);
-
-      // Menu Toggle
-      function toggleMenu(force) {
-        const isOpen = typeof force === 'boolean' ? force : !document.body.classList.contains('menu-open');
-        if (isOpen) {
-          document.body.classList.add('menu-open');
-          menuBtn.setAttribute('aria-expanded', 'true');
-        } else {
-          document.body.classList.remove('menu-open');
-          menuBtn.setAttribute('aria-expanded', 'false');
-        }
-      }
-
-      menuBtn.addEventListener('click', () => toggleMenu());
-
-      // Grid Toggle
-      function toggleGrid(force) {
-        const isGrid = typeof force === 'boolean' ? force : !document.body.classList.contains('gridview');
-        if (isGrid) {
-          document.body.classList.add('gridview');
-        } else {
-          document.body.classList.remove('gridview');
-        }
-      }
-
-      gridBtn.addEventListener('click', () => toggleGrid());
-
-      // Menu Navigation Actions
-      document.querySelectorAll('[data-grid]').forEach((el) => {
-        el.addEventListener('click', (e) => {
-          e.preventDefault();
-          toggleMenu(false);
-          toggleGrid(true);
-        });
-      });
-
-      document.querySelectorAll('[data-close-menu]').forEach((el) => {
-        el.addEventListener('click', (e) => {
-          e.preventDefault();
-          toggleMenu(false);
-        });
-      });
-
-      // Escape key handler: lightbox -> menu -> grid
-      window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          if (document.body.classList.contains('lit')) {
-            closeLightbox();
-            return;
-          }
-          if (document.body.classList.contains('menu-open')) {
-            toggleMenu(false);
-            return;
-          }
-          if (document.body.classList.contains('gridview')) {
-            toggleGrid(false);
-            return;
-          }
-        }
-      });
-
-      // Custom Cursor
-      window.addEventListener('pointermove', (e) => {
-        if (e.pointerType === 'mouse' || e.pointerType === 'pen') {
-          mouseX = e.clientX;
-          mouseY = e.clientY;
-          const target = e.target;
-          if (target && target.closest && target.closest('.card, a, button, #grid figure')) {
-            dot.classList.add('wide');
-          } else {
-            dot.classList.remove('wide');
-          }
-        }
-      }, { passive: true });
-
-      function updateCursor() {
-        dotX += (mouseX - dotX) * 0.2;
-        dotY += (mouseY - dotY) * 0.2;
-        dot.style.transform = `translate3d(${dotX}px, ${dotY}px, 0)`;
-        requestAnimationFrame(updateCursor);
-      }
-      requestAnimationFrame(updateCursor);
-
-    })();
-  </script>
+  <!-- Módulo JavaScript Principal -->
+  <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

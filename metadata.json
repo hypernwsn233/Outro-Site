@@ -1,6 +1,6 @@
 {
-  "name": "Ethan Vale — I See Through the Wild",
-  "description": "Wildlife photography archive by Ethan Vale. Field notes from natural encounters, captured without intervention.",
+  "name": "ETEC Gallery — Lauro Gomes",
+  "description": "Acervo visual e galeria interativa da ETEC Lauro Gomes, São Bernardo do Campo.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
