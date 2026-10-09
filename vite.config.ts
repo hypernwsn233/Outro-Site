@@ -5,6 +5,9 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
+    // O repositório é publicado em https://<usuario>.github.io/Outro-Site/
+    // O base correto evita URLs absolutas apontando para a raiz do domínio.
+    base: '/Outro-Site/',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
