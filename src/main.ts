@@ -8,7 +8,6 @@ import { INITIAL_STILLS, StillItem } from './data/stills';
 // ============================================================================
 // 1. Constantes e Configurações
 // ============================================================================
-const CDN_BASE = 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/';
 const FILM_URL = 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260922_195107_ed3f055a-3a13-4a71-b743-e10310454246.mp4';
 
 // Lista dinâmica de fotos da galeria
@@ -86,7 +85,6 @@ let velY = 0;
 let isDragging = false;
 let focusedIndex = -1;
 let currentSourceEl: HTMLElement | null = null;
-let currentLitToken = 0;
 
 // Estado de arrasto por ponteiro
 let pointerDownX = 0;
@@ -187,7 +185,7 @@ export function rebuildCards() {
     const img = document.createElement('img');
     img.alt = item.title;
 
-    const srcUrl = downscaledUrls[i] || (item.customUrl ? item.customUrl : CDN_BASE + item.id + '_min.webp');
+    const srcUrl = downscaledUrls[i] || item.customUrl || item.assetUrl || '';
     img.src = srcUrl;
     img.classList.add('in');
 
@@ -349,21 +347,10 @@ export function openLightbox(idx: number, sourceEl: HTMLElement | null) {
   litWhere.textContent = item.place;
   litNote.textContent = item.note;
 
-  const thumbUrl = downscaledUrls[idx] || (item.customUrl ? item.customUrl : CDN_BASE + item.id + '_min.webp');
+  const thumbUrl = downscaledUrls[idx] || item.customUrl || item.assetUrl || '';
   litImg.src = thumbUrl;
 
-  if (item.customUrl) {
-    litImg.src = item.customUrl;
-  } else {
-    const myToken = ++currentLitToken;
-    const fullImg = new Image();
-    fullImg.onload = () => {
-      if (myToken === currentLitToken && document.body.classList.contains('lit')) {
-        litImg.src = CDN_BASE + item.id + '.png';
-      }
-    };
-    fullImg.src = CDN_BASE + item.id + '.png';
-  }
+  if (item.customUrl) litImg.src = item.customUrl;
 
   document.body.classList.add('lit');
 
@@ -826,7 +813,11 @@ function initAssetsAndIntro() {
   // Redimensionamento inicial das fotos padrão
   const decodeCap = getCardDecodeMax(window.innerWidth);
   stills.forEach((item, idx) => {
-    const thumbUrl = CDN_BASE + item.id + '_min.webp';
+    const thumbUrl = item.customUrl || item.assetUrl || '';
+    if (!thumbUrl) {
+      updateSplashProgress();
+      return;
+    }
     downscaleImage(thumbUrl, decodeCap).then((finalUrl) => {
       downscaledUrls[idx] = finalUrl;
       if (cardNodes[idx]) {
